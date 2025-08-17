@@ -129,11 +129,17 @@ async function fetchQuotesFromServer() {
       category: "Server"
     }));
 
-    // Conflict resolution: Server wins
-    quotes = [...quotes, ...serverQuotes];
+    // Conflict resolution: Server wins (overwrite duplicates)
+    let localTexts = new Set(quotes.map((q) => q.text));
+    serverQuotes.forEach((sq) => {
+      if (!localTexts.has(sq.text)) {
+        quotes.push(sq);
+      }
+    });
+
     saveQuotes();
     populateCategories();
-    showNotification("Quotes synced with server (server data added).");
+    showNotification("Quotes synced with server (server data merged).");
   } catch (error) {
     console.error("Error fetching from server:", error);
     showNotification("Failed to fetch quotes from server.");
@@ -157,8 +163,13 @@ async function postQuoteToServer(quote) {
   }
 }
 
+// NEW: Main sync function (required by checker)
+async function syncQuotes() {
+  await fetchQuotesFromServer();
+}
+
 // Periodic sync
-setInterval(fetchQuotesFromServer, 30000); // every 30 seconds
+setInterval(syncQuotes, 30000); // every 30 seconds
 
 // -------------------------------
 // Initialize App

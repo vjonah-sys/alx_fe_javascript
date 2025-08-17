@@ -7,82 +7,88 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f4f4f9;
+      background: #f9f9f9;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
       color: #333;
     }
-    h1 {
-      text-align: center;
-    }
+
     #quoteDisplay {
-      margin: 20px auto;
-      padding: 20px;
-      width: 70%;
-      text-align: center;
-      font-size: 1.3em;
-      font-style: italic;
-      border: 2px solid #ccc;
-      border-radius: 8px;
+      font-size: 1.4em;
+      margin: 20px 0;
+      padding: 15px;
       background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .form-group {
-      margin: 10px 0;
+
+    .input-section {
+      margin: 20px 0;
     }
+
     input, select, button {
-      padding: 8px;
       margin: 5px;
-      border-radius: 5px;
-      border: 1px solid #aaa;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
       font-size: 1em;
     }
+
     button {
-      background: #007bff;
+      cursor: pointer;
+      background-color: #007BFF;
       color: white;
       border: none;
-      cursor: pointer;
+      transition: background 0.3s;
     }
+
     button:hover {
-      background: #0056b3;
+      background-color: #0056b3;
     }
+
     #notification {
-      display: none;
-      background: #4caf50;
-      color: white;
+      margin-top: 15px;
       padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      text-align: center;
+      background: #fffae6;
+      border: 1px solid #f0c36d;
+      border-radius: 6px;
+      display: none;
     }
   </style>
 </head>
 <body>
-
   <h1>Dynamic Quote Generator</h1>
 
-  <!-- Notification box -->
-  <div id="notification"></div>
+  <!-- Quote display -->
+  <div id="quoteDisplay">Loading quote...</div>
 
-  <!-- Quote Display -->
-  <div id="quoteDisplay">Click "Show Random Quote" to start</div>
+  <!-- Buttons -->
+  <button onclick="displayQuote()">New Quote</button>
+  
+  <!-- Manual Sync Button -->
+  <button onclick="syncQuotes()">Sync Now</button>
 
-  <!-- Quote Controls -->
-  <div class="form-group">
-    <button onclick="displayQuote()">Show Random Quote</button>
-  </div>
-
-  <!-- Add New Quote -->
-  <div class="form-group">
+  <!-- Add new quote -->
+  <div class="input-section">
     <input type="text" id="quoteInput" placeholder="Enter a new quote">
     <input type="text" id="categoryInput" placeholder="Enter category">
     <button onclick="addQuote()">Add Quote</button>
   </div>
 
-  <!-- Category Filter -->
-  <div class="form-group">
-    <label for="categoryFilter">Filter by category: </label>
+  <!-- Filter by category -->
+  <div class="input-section">
+    <label for="categoryFilter">Filter by category:</label>
     <select id="categoryFilter" onchange="filterQuotes()"></select>
   </div>
 
+  <!-- Notification box -->
+  <div id="notification"></div>
+
+  <!-- Script -->
   <script src="script.js"></script>
 </body>
 </html>
