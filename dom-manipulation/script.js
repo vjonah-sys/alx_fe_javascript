@@ -1,7 +1,15 @@
 "use strict";
 
-// ----- Initial data -----
-let quotes = [
+/* -----------------------------
+   Web Storage Keys
+------------------------------ */
+const LOCAL_KEY = "dqg_quotes";
+const SESSION_KEY = "dqg_lastQuote";
+
+/* -----------------------------
+   Default Seed Data
+------------------------------ */
+const seedQuotes = [
   { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "inspiration" },
   { text: "Simplicity is the soul of efficiency.", category: "productivity" },
   { text: "Code is like humor. When you have to explain it, it’s bad.", category: "programming" },
@@ -9,17 +17,46 @@ let quotes = [
   { text: "Premature optimization is the root of all evil.", category: "programming" }
 ];
 
-// ----- DOM references -----
+/* -----------------------------
+   Quotes State
+------------------------------ */
+let quotes = loadQuotes() ?? seedQuotes.slice();
+
+/* -----------------------------
+   DOM References
+------------------------------ */
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newQuoteBtn = document.getElementById("newQuote");
+const exportBtn = document.getElementById("exportBtn");
+const importFile = document.getElementById("importFile");
 
-// Category selector (created dynamically)
 let categorySelect;
-
-// Container for form
 let addFormContainer;
 
-// ----- Helpers -----
+/* -----------------------------
+   Storage Helpers
+------------------------------ */
+function saveQuotes() {
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(quotes));
+}
+
+function loadQuotes() {
+  const data = localStorage.getItem(LOCAL_KEY);
+  return data ? JSON.parse(data) : null;
+}
+
+function saveLastQuote(quote) {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(quote));
+}
+
+function loadLastQuote() {
+  const data = sessionStorage.getItem(SESSION_KEY);
+  return data ? JSON.parse(data) : null;
+}
+
+/* -----------------------------
+   Utilities
+------------------------------ */
 function uniqueCategories(list) {
   return Array.from(new Set(list.map(q => q.category))).sort();
 }
@@ -28,7 +65,9 @@ function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// ----- Main functions -----
+/* -----------------------------
+   Core Functions
+------------------------------ */
 function showRandomQuote() {
   const category = categorySelect.value;
   const pool = category === "all" ? quotes : quotes.filter(q => q.category === category);
@@ -39,12 +78,28 @@ function showRandomQuote() {
   }
 
   const q = pickRandom(pool);
+  renderQuote(q);
+  saveLastQuote(q);
+}
+
+function renderQuote(q) {
   quoteDisplay.innerHTML = `
     <div style="margin-bottom:.25rem;">“${q.text}”</div>
     <div class="muted">Category: <span class="chip">${q.category}</span></div>
   `;
 }
 
+function addQuote(text, category) {
+  if (!text || !category) return;
+  quotes.push({ text, category });
+  saveQuotes();
+  refreshCategorySelect();
+  showRandomQuote();
+}
+
+/* -----------------------------
+   Add Quote Form
+------------------------------ */
 function createAddQuoteForm() {
   addFormContainer.innerHTML = "";
 
@@ -74,15 +129,9 @@ function createAddQuoteForm() {
   });
 }
 
-function addQuote(text, category) {
-  if (!text || !category) return;
-
-  quotes.push({ text, category });
-  refreshCategorySelect();
-  showRandomQuote();
-}
-
-// ----- UI setup -----
+/* -----------------------------
+   Category Select
+------------------------------ */
 function refreshCategorySelect() {
   categorySelect.innerHTML = "";
 
@@ -99,6 +148,49 @@ function refreshCategorySelect() {
   });
 }
 
+/* -----------------------------
+   Import / Export JSON
+------------------------------ */
+function exportQuotes() {
+  const blob = new Blob([JSON.stringify(quotes, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quotes.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}
+
+function importFromJsonFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedQuotes = JSON.parse(e.target.result);
+      if (Array.isArray(importedQuotes)) {
+        quotes.push(...importedQuotes);
+        saveQuotes();
+        refreshCategorySelect();
+        alert("Quotes imported successfully!");
+      } else {
+        alert("Invalid JSON format.");
+      }
+    } catch (err) {
+      alert("Error parsing JSON file.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* -----------------------------
+   Init
+------------------------------ */
 document.addEventListener("DOMContentLoaded", () => {
   // Category selector
   const row = document.createElement("div");
@@ -134,7 +226,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Events
   newQuoteBtn.addEventListener("click", showRandomQuote);
   categorySelect.addEventListener("change", showRandomQuote);
+  exportBtn.addEventListener("click", exportQuotes);
+  importFile.addEventListener("change", importFromJsonFile);
 
-  // First quote
-  showRandomQuote();
+  // Initial render
+  const lastQuote = loadLastQuote();
+  if (lastQuote) {
+    renderQuote(lastQuote);
+  } else {
+    showRandomQuote();
+  }
 });
