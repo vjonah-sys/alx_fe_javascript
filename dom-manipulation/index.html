@@ -1,18 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Quote Generator</title>
-</head>
 <body>
   <h1>Dynamic Quote Generator</h1>
+
+  <!-- Sync Status -->
+  <div id="syncStatus" style="color: green; font-weight: bold; margin-bottom: 10px;"></div>
 
   <!-- Category Filter -->
   <label for="categoryFilter">Filter by Category:</label>
   <select id="categoryFilter" onchange="filterQuotes()">
     <option value="all">All Categories</option>
-    <!-- Categories will be dynamically populated -->
   </select>
 
   <!-- Quote Display -->
@@ -34,4 +29,3 @@
 
   <script src="script.js"></script>
 </body>
-</html>
