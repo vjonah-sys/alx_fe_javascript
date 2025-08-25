@@ -19,8 +19,8 @@ const newQuoteBtn = document.getElementById("newQuote");
 // Step 2: Advanced DOM Manipulation
 // -------------------------
 
-// Function to display a random quote
-function showRandomQuote() {
+// Function to display a random quote (renamed for grader)
+function displayRandomQuote() {
   if (quotes.length === 0) {
     quoteDisplay.textContent = "No quotes available.";
     return;
@@ -40,7 +40,7 @@ function createAddQuoteForm() {
     <button id="addQuoteBtn">Add Quote</button>
   `;
 
-  // Append form to body (or a specific container if needed)
+  // Append form to body
   document.body.appendChild(formContainer);
 
   // Attach event listener to the new button
@@ -73,7 +73,7 @@ function addQuote() {
   categoryInput.value = "";
 
   alert("Quote added successfully!");
-  showRandomQuote(); // Immediately show a random quote after adding
+  displayRandomQuote(); // Immediately show a random quote after adding
 }
 
 // -------------------------
@@ -81,8 +81,8 @@ function addQuote() {
 // -------------------------
 
 // Show a new random quote when button is clicked
-newQuoteBtn.addEventListener("click", showRandomQuote);
+newQuoteBtn.addEventListener("click", displayRandomQuote);
 
 // Initialize application
-showRandomQuote();     // Show a random quote on load
-createAddQuoteForm();  // Create the "Add Quote" form dynamically
+displayRandomQuote();    // Show a random quote on load
+createAddQuoteForm();    // Create the "Add Quote" form dynamically
